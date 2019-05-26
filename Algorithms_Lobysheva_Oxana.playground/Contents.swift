@@ -1,158 +1,78 @@
 import UIKit
 
-var array_base: [Int] = [9, 23, 0, 2, 3, -8, 1, 14, -12, 0]
-var array_base_sorted: [Int] = [-12, -8, 0, 0, 1, 2, 3, 9, 14, 23]
-
-var array_base_big: [Int] = []
-
-for _ in 0...2000 {
-    array_base_big.append(Int.random(in: -100...100))
-}
-
-print("\n----------------------------------------------------------------------------");
-
-print("\n1. Попробовать оптимизировать пузырьковую сортировку.");
-print("   Сравнить количество операций сравнения оптимизированной и не оптимизированной программы. ");
-print("   Написать функции сортировки, которые возвращают количество операций.\n");
-
-func bubbleSort(array: inout [Int]) -> Int {
-    var countCompareOperations: Int = 0
-    var countSwapOperations: Int = 0
-    for i in 0..<array.count {
-        for k in 0..<(array.count - 1) {
-            countCompareOperations += 1
-            if array[i] < array[k] {
-                countSwapOperations += 1
-                let tmp: Int = array[i]
-                array[i] = array[k]
-                array[k] = tmp
-            }
-        }
+func print(map: [[Int]]) {
+    for i in 0..<map.count {
+        print("\(map[i]) ")
     }
-    print("countCompareOperations = \(countCompareOperations) countSwapOperations = \(countSwapOperations)")
-    return countCompareOperations + countSwapOperations
+    print("\n");
 }
 
-func bubbleSortOptimized(array: inout [Int]) -> Int {
-    var countCompareOperations: Int = 0
-    var countSwapOperations: Int = 0
-    for i in 0..<array.count {
-        for k in 0..<(array.count - 1 - i) {
-            countCompareOperations += 1
-            if array[k] > array[k + 1] {
-                countSwapOperations += 1
-                let tmp: Int = array[k]
-                array[k] = array[k + 1]
-                array[k + 1] = tmp
-            }
-        }
-    }
-    print("countCompareOperations = \(countCompareOperations) countSwapOperations = \(countSwapOperations)")
-    return countCompareOperations + countSwapOperations
-}
+var map: [[Int]] = [
+    [1, 1, 1],
+    [1, 1, 1, 1],
+    [0, 1, 1, 0],
+    [1, 0, 1, 1],
+    [1, 1, 1, 1]
+];
 
-
-var array1: [Int] = array_base
-print("array: \(array1)")
-print("total for bubleSort = \(bubbleSort(array: &array1)) \n")
-print("result: \(array1) \n")
-
-var array2: [Int] = array_base
-print("array: \(array2)")
-print("total for bubleSortOptimized = \(bubbleSortOptimized(array: &array2)) \n")
-print("result: \(array2) \n")
+var char_1: [Character] = ["G", "E", "E", "K", "M", "I", "N", "D", "S"];
+var char_2: [Character] = ["G", "E", "E", "K", "B", "R", "A", "I", "N", "S"];
 
 
 print("\n----------------------------------------------------------------------------");
 
-print("\n2. *Реализовать шейкерную сортировку.\n");
+print("\n1. *Количество маршрутов с препятствиями. Реализовать чтение массива");
+print("   с препятствием и нахождение количество маршрутов.\n");
 
-func coctailSort(array: inout [Int]) -> Int {
-    var countCompareOperations: Int = 0
-    var countSwapOperations: Int = 0
-    var stepLeft: Int = 0
-    var stepRight: Int = array.count-1
-    repeat {
-        for i in stride(from: stepLeft, to: stepRight, by: 1) {
-            countCompareOperations += 1
-            if array[i] > array[i + 1] {
-               countSwapOperations += 1
-               let tmp: Int = array[i]
-               array[i] = array[i + 1]
-               array[i + 1] = tmp
+func getPathWithBarrier(map: inout [[Int]]) -> Void {
+    print(map: map);
+    for i in 1..<map.count {
+        for k in 1..<map[i].count {
+            if map[i][k] != 0 {
+                if map[i - 1].count > k {
+                    map[i][k] = map[i - 1][k] + map[i][k - 1];
+                } else {
+                    map[i][k] = map[i][k - 1];
+                }
             }
         }
-        stepRight -= 1
-        for k in stride(from: stepRight, to: stepLeft, by: -1) {
-            countCompareOperations += 1
-            if array[k] < array[k - 1] {
-               countSwapOperations += 1
-               let tmp = array[k]
-               array[k] = array[k - 1]
-               array[k - 1] = tmp
-            }
-        }
-        stepLeft += 1
-    } while (stepLeft < stepRight)
-    print("countCompareOperations = \(countCompareOperations) countSwapOperations = \(countSwapOperations)")
-    return countCompareOperations + countSwapOperations
+    }
+    print(map: map);
+    let last: Int = map[map.count - 1].count;
+    print("paths with barriers = \(map[map.count - 1][last - 1])");
 }
 
-var array3: [Int] = array_base
-print("array: \(array3)")
-print("total for coctailSort = \(coctailSort(array: &array3)) \n")
-print("result: \(array3) \n")
+getPathWithBarrier(map: &map);
 
 print("\n----------------------------------------------------------------------------");
 
-print("\n3. Реализовать бинарный алгоритм поиска в виде функции, которой передается отсортированный массив.");
-print("   Функция возвращает индекс найденного элемента или -1, если элемент не найден.\n");
+print("\n2. Решить задачу о нахождении длины максимальной последовательности с помощью матрицы.\n");
 
-func binarySearch(array: inout [Int], item: Int) -> Int {
-    var start: Int = 0
-    var end: Int = array.count - 1
-    var i: Int = (start + end) / 2
-    while ((array[i] != item) && (start <= end)) {
-        if (array[i] > item) {
-            end = i - 1
-        } else {
-            start = i + 1
+
+func getLongestSubsequence(_ char_1: [Character], _ char_2: [Character]) {
+    print(char_1)
+    print(char_2)
+    var matrix: [[Int]] = Array(repeating: Array(repeating: 0, count: (char_2.count)), count: (char_1.count))
+    for i in 0..<(char_1.count){
+        for k in 0..<(char_2.count){
+            if (i == 0 || k == 0){
+                if char_1[i] == char_2[k] {
+                  matrix[i][k] = 1;
+                }
+            } else {
+                if (char_1[i-1] == char_2[k-1]) {
+                    matrix[i][k] = 1 + matrix[i - 1][k - 1];
+                } else {
+                    matrix[i][k] = max(matrix[i - 1][k], matrix[i][k - 1]);
+                }
+            }
         }
-        i = (start + end) / 2
     }
-    if (start <= end) {
-        return i
-    }
-    return -1
+    print(map: matrix)
+    print("longest common subsequence = \(matrix[char_1.count-1][char_2.count-1])");
 }
 
-var array4: [Int] = array_base_sorted
-print("array: \(array4)")
-print("index of 15 (not in array) = \(binarySearch(array: &array4, item: 15))")
+getLongestSubsequence(char_1, char_2);
 
-for element in array_base {
-    print("index of \(element) = \(binarySearch(array: &array4, item: element))");
-}
 
 print("\n----------------------------------------------------------------------------");
-
-let st: Int = Int(pow(Double(array_base_big.count),2))
-print("O(N^2): \(st)")
-
-var arraybig_1: [Int] = array_base_big
-let bubleSort: Int = bubbleSort(array: &arraybig_1)
-print("bubleSort = \(bubleSort)")
-print("bubleSort - O(N^2) = \(bubleSort - st)")
-print("% = \(((bubleSort - st)*100)/st) %\n")
-
-var arraybig_2: [Int] = array_base_big
-let bubbleSortOpt: Int = bubbleSortOptimized(array: &arraybig_2)
-print("bubbleSortOptimized = \(bubbleSortOpt)")
-print("bubbleSortOptimized - O(N^2) = \(bubbleSortOpt - st)")
-print("% = \(((bubbleSortOpt - st)*100)/st) %\n")
-
-var arraybig_3: [Int] = array_base_big
-let coctailS: Int = coctailSort(array: &arraybig_3)
-print("coctailSort = \(coctailS)")
-print("coctailSort - O(N^2) = \(coctailS - st)")
-print("% = \(((coctailS - st)*100)/st) %\n")
